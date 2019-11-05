@@ -65,7 +65,7 @@ class BetRepository implements BetInterface
      * @param $stake_amount
      * @return int|null
      */
-    private function validateMaxStake($stake_amount)
+    public function validateMaxStake($stake_amount)
     {
         if ($stake_amount > Bet::MAX_STAKE) {
             $exception = (new BetException("Maximum stake amount is " . Bet::MAX_STAKE, 3))->getException();
@@ -81,7 +81,7 @@ class BetRepository implements BetInterface
      * @param $selections
      * @return int|null
      */
-    private function validateMaxWin($stake_amount, $selections)
+    public function validateMaxWin($stake_amount, $selections)
     {
         $overallOdds = 1;
         foreach ($selections as $selection) {
