@@ -29,4 +29,9 @@ class Player extends Model implements AuthenticatableContract, AuthorizableContr
     protected $hidden = [
         'password',
     ];
+
+    public function updateBalance()
+    {
+
+    }
 }

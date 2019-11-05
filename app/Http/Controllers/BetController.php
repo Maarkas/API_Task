@@ -3,18 +3,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Interfaces\BetInterface;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class BetController extends Controller
 {
-    private $bet;
+    /**
+     * @var BetInterface
+     */
+    protected $betRepository;
 
-    public function __construct(BetInterface $bet)
+    public function __construct(BetInterface $betRepository)
     {
-        $this->bet = $bet;
+        $this->betRepository = $betRepository;
     }
 
     /**
@@ -22,16 +25,20 @@ class BetController extends Controller
      *
      * @param Request $request
      * @return void
-     * @throws ValidationException
      */
     public function bet(Request $request)
     {
-        $this->validate($request, [
-            'stake_amount' => 'between:0.3,10000',
-            'selections' => 'min:1,max:20'
+        $validator = Validator::make($request->all(), [
+            'player_id' => 'required|numeric',
+            'stake_amount' => 'required|json|between:0.3,10000',
+            'selections' => 'required|array',
         ]);
 
-        // max win = stake_amount * (selections length * odds)
-        return response()->json('success');
+        if ($validator->fails()) {
+            return response()->json($validator->getMessageBag());
+        }
+
+        $bet = $this->betRepository->makeBet($request->all());
+        return response()->json($bet);
     }
 }
