@@ -1,34 +1,27 @@
 <?php
 
+
 namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Bet
+ * Class BalanceTransactions
  * @package App
  * @property integer    $id
- * @property float      $stake_amount
+ * @property integer    $player_id
+ * @property float      $amount
+ * @property float      $amount_before
  * @property Carbon     $created_at
  * @property Carbon     $updated_at
  */
-class Bet extends Model
+class BalanceTransactions extends Model
 {
-    /**
-     * Description: Maximum stake amount
-     */
-    const MAX_STAKE = 10000;
-
-    /**
-     * Description: Maximum win pool amount
-     */
-    const MAX_WIN = 20000;
-
     /**
      * @var string
      */
-    protected $table = 'bets';
+    protected $table = 'balance_transactions';
 
     /**
      * @var array

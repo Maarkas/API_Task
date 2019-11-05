@@ -16,7 +16,7 @@ class CreateBetsTable extends Migration
         Schema::create('bets', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->float('stake_amount');
-            $table->dateTime('created_at');
+            $table->timestamps();
         });
     }
 

@@ -6,29 +6,31 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Bet
+ * Class Selection
  * @package App
  * @property integer    $id
- * @property float      $stake_amount
+ * @property integer    $bet_id
+ * @property integer    $selection_id
+ * @property float      $odds
  * @property Carbon     $created_at
  * @property Carbon     $updated_at
  */
-class Bet extends Model
+class Selection extends Model
 {
     /**
-     * Description: Maximum stake amount
+     * Description: Minimum possible odds
      */
-    const MAX_STAKE = 10000;
+    public const MIN_ODDS = 1;
 
     /**
-     * Description: Maximum win pool amount
+     * Description: Maximum possible odds
      */
-    const MAX_WIN = 20000;
+    public const MAX_ODDS = 10000;
 
     /**
      * @var string
      */
-    protected $table = 'bets';
+    protected $table = 'bet_selections';
 
     /**
      * @var array

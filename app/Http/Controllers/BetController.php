@@ -1,11 +1,14 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Interfaces\BetInterface;
+use App\Rules\SelectionIsUnique;
+use App\Rules\SelectionMaxOdds;
+use App\Rules\SelectionMinOdds;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class BetController extends Controller
@@ -15,30 +18,48 @@ class BetController extends Controller
      */
     protected $betRepository;
 
+    /**
+     * BetController constructor.
+     * @param BetInterface $betRepository
+     */
     public function __construct(BetInterface $betRepository)
     {
         $this->betRepository = $betRepository;
     }
 
     /**
-     * Create a new controller instance.
+     * Route: /api/bet
+     * Method: POST
+     *
+     * Description: Making bet method
      *
      * @param Request $request
-     * @return void
+     * @return JsonResponse
      */
     public function bet(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'player_id' => 'required|numeric',
+            'player_id' => 'required|numeric|min:1',
             'stake_amount' => 'required|json|between:0.3,10000',
-            'selections' => 'required|array',
+            'selections' => ['required', 'array', 'between:1,20'],
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->getMessageBag());
+        $payload = $request->all();
+        $payload['errors'] = [];
+
+        $payload['selections'] = (new SelectionMaxOdds())->validate($payload['selections']);
+        $payload['selections'] = (new SelectionMinOdds())->validate($payload['selections']);
+        $error = (new SelectionIsUnique())->validate($payload['selections']);
+
+        if ($error) {
+            array_push($payload['errors'], $error);
         }
 
-        $bet = $this->betRepository->makeBet($request->all());
-        return response()->json($bet);
+        if ($validator->fails()) {
+            return Response::json($validator->getMessageBag(), 400);
+        }
+
+        $bet = $this->betRepository->makeBet($payload);
+        return Response::json($bet, 201);
     }
 }
